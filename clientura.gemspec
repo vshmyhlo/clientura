@@ -11,29 +11,37 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Vlad Shmyhlo"]
-  s.date = "2016-02-11"
+  s.date = "2016-02-12"
   s.description = "TODO: longer description of your gem"
   s.email = "aion.stu@gmail.com"
   s.extra_rdoc_files = [
+    "LICENSE",
     "LICENSE.txt",
+    "README.md",
     "README.rdoc"
   ]
   s.files = [
     ".document",
     ".rspec",
+    ".rubocop.yml",
     ".ruby-gemset",
     ".ruby-version",
     "Gemfile",
     "Gemfile.lock",
+    "LICENSE",
     "LICENSE.txt",
+    "README.md",
     "README.rdoc",
     "Rakefile",
     "VERSION",
     "clientura.gemspec",
     "lib/clientura.rb",
+    "lib/clientura/client.rb",
     "lib/clientura/version.rb",
+    "spec/clientura/client_spec.rb",
     "spec/clientura_spec.rb",
-    "spec/spec_helper.rb"
+    "spec/spec_helper.rb",
+    "spec/support/test_server.rb"
   ]
   s.homepage = "http://github.com/v-shmyhlo/clientura"
   s.licenses = ["MIT"]
@@ -44,45 +52,54 @@ Gem::Specification.new do |s|
     s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<concurrent-ruby>, [">= 0"])
-      s.add_runtime_dependency(%q<concurrent-ruby-edge>, [">= 0"])
-      s.add_runtime_dependency(%q<concurrent-ruby-ext>, [">= 0"])
-      s.add_runtime_dependency(%q<activesupport>, [">= 0"])
-      s.add_development_dependency(%q<rspec>, ["~> 2.8.0"])
-      s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
-      s.add_development_dependency(%q<bundler>, ["~> 1.0"])
-      s.add_development_dependency(%q<jeweler>, ["~> 2.0.1"])
+      s.add_runtime_dependency(%q<http>, ["~> 1.0"])
+      s.add_runtime_dependency(%q<concurrent-ruby>, ["~> 1.0"])
+      s.add_runtime_dependency(%q<concurrent-ruby-edge>, ["~> 0.2"])
+      s.add_runtime_dependency(%q<concurrent-ruby-ext>, ["~> 1.0"])
+      s.add_runtime_dependency(%q<activesupport>, ["~> 4.0"])
+      s.add_development_dependency(%q<rspec>, [">= 0"])
+      s.add_development_dependency(%q<rdoc>, [">= 0"])
+      s.add_development_dependency(%q<bundler>, [">= 0"])
+      s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<simplecov>, [">= 0"])
-      s.add_development_dependency(%q<rubocop>, ["~> 0.37.2"])
-      s.add_development_dependency(%q<pry>, ["~> 0.10.3"])
-      s.add_development_dependency(%q<webmock>, ["~> 1.22.6"])
+      s.add_development_dependency(%q<rubocop>, [">= 0"])
+      s.add_development_dependency(%q<pry>, [">= 0"])
+      s.add_development_dependency(%q<sinatra>, [">= 0"])
+      s.add_development_dependency(%q<sinatra-contrib>, [">= 0"])
+      s.add_development_dependency(%q<rack>, [">= 0"])
     else
-      s.add_dependency(%q<concurrent-ruby>, [">= 0"])
-      s.add_dependency(%q<concurrent-ruby-edge>, [">= 0"])
-      s.add_dependency(%q<concurrent-ruby-ext>, [">= 0"])
-      s.add_dependency(%q<activesupport>, [">= 0"])
-      s.add_dependency(%q<rspec>, ["~> 2.8.0"])
-      s.add_dependency(%q<rdoc>, ["~> 3.12"])
-      s.add_dependency(%q<bundler>, ["~> 1.0"])
-      s.add_dependency(%q<jeweler>, ["~> 2.0.1"])
+      s.add_dependency(%q<http>, ["~> 1.0"])
+      s.add_dependency(%q<concurrent-ruby>, ["~> 1.0"])
+      s.add_dependency(%q<concurrent-ruby-edge>, ["~> 0.2"])
+      s.add_dependency(%q<concurrent-ruby-ext>, ["~> 1.0"])
+      s.add_dependency(%q<activesupport>, ["~> 4.0"])
+      s.add_dependency(%q<rspec>, [">= 0"])
+      s.add_dependency(%q<rdoc>, [">= 0"])
+      s.add_dependency(%q<bundler>, [">= 0"])
+      s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<simplecov>, [">= 0"])
-      s.add_dependency(%q<rubocop>, ["~> 0.37.2"])
-      s.add_dependency(%q<pry>, ["~> 0.10.3"])
-      s.add_dependency(%q<webmock>, ["~> 1.22.6"])
+      s.add_dependency(%q<rubocop>, [">= 0"])
+      s.add_dependency(%q<pry>, [">= 0"])
+      s.add_dependency(%q<sinatra>, [">= 0"])
+      s.add_dependency(%q<sinatra-contrib>, [">= 0"])
+      s.add_dependency(%q<rack>, [">= 0"])
     end
   else
-    s.add_dependency(%q<concurrent-ruby>, [">= 0"])
-    s.add_dependency(%q<concurrent-ruby-edge>, [">= 0"])
-    s.add_dependency(%q<concurrent-ruby-ext>, [">= 0"])
-    s.add_dependency(%q<activesupport>, [">= 0"])
-    s.add_dependency(%q<rspec>, ["~> 2.8.0"])
-    s.add_dependency(%q<rdoc>, ["~> 3.12"])
-    s.add_dependency(%q<bundler>, ["~> 1.0"])
-    s.add_dependency(%q<jeweler>, ["~> 2.0.1"])
+    s.add_dependency(%q<http>, ["~> 1.0"])
+    s.add_dependency(%q<concurrent-ruby>, ["~> 1.0"])
+    s.add_dependency(%q<concurrent-ruby-edge>, ["~> 0.2"])
+    s.add_dependency(%q<concurrent-ruby-ext>, ["~> 1.0"])
+    s.add_dependency(%q<activesupport>, ["~> 4.0"])
+    s.add_dependency(%q<rspec>, [">= 0"])
+    s.add_dependency(%q<rdoc>, [">= 0"])
+    s.add_dependency(%q<bundler>, [">= 0"])
+    s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<simplecov>, [">= 0"])
-    s.add_dependency(%q<rubocop>, ["~> 0.37.2"])
-    s.add_dependency(%q<pry>, ["~> 0.10.3"])
-    s.add_dependency(%q<webmock>, ["~> 1.22.6"])
+    s.add_dependency(%q<rubocop>, [">= 0"])
+    s.add_dependency(%q<pry>, [">= 0"])
+    s.add_dependency(%q<sinatra>, [">= 0"])
+    s.add_dependency(%q<sinatra-contrib>, [">= 0"])
+    s.add_dependency(%q<rack>, [">= 0"])
   end
 end
 

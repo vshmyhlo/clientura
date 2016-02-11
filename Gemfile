@@ -6,18 +6,27 @@ source 'http://rubygems.org'
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
 
-gem 'concurrent-ruby', require: 'concurrent'
-gem 'concurrent-ruby-edge', require: 'concurrent-edge'
-gem 'concurrent-ruby-ext'
-gem 'activesupport', require: 'active_support/core_ext/object'
+gem 'http', '~> 1.0'
+gem 'concurrent-ruby', '~> 1.0', require: 'concurrent'
+gem 'concurrent-ruby-edge', '~> 0.2', require: 'concurrent-edge'
+gem 'concurrent-ruby-ext', '~> 1.0'
+gem 'activesupport', '~> 4.0', require: [
+  'active_support/core_ext/object',
+  'active_support/json'
+]
 
 group :development, :test do
-  gem 'rspec', '~> 2.8.0'
-  gem 'rdoc', '~> 3.12'
-  gem 'bundler', '~> 1.0'
-  gem 'jeweler', '~> 2.0.1'
-  gem 'simplecov', '>= 0'
-  gem 'rubocop', '~> 0.37.2'
-  gem 'pry', '~> 0.10.3'
-  gem 'webmock', '~> 1.22.6'
+  gem 'rspec'
+  gem 'rdoc'
+  gem 'bundler'
+  gem 'jeweler'
+  gem 'simplecov'
+  gem 'rubocop'
+  gem 'pry'
+
+  gem 'sinatra'
+  gem 'sinatra-contrib'
+  gem 'rack', require: [
+    'rack', 'rack/handler/webrick'
+  ]
 end
