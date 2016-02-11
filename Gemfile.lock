@@ -1,9 +1,21 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    activesupport (4.2.5.1)
+      i18n (~> 0.7)
+      json (~> 1.7, >= 1.7.7)
+      minitest (~> 5.1)
+      thread_safe (~> 0.3, >= 0.3.4)
+      tzinfo (~> 1.1)
     addressable (2.4.0)
     ast (2.2.0)
     builder (3.2.2)
+    coderay (1.1.0)
+    concurrent-ruby (1.0.0)
+    concurrent-ruby-edge (0.2.0)
+      concurrent-ruby (~> 1.0.0)
+    concurrent-ruby-ext (1.0.0)
+      concurrent-ruby (~> 1.0.0)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     descendants_tracker (0.0.4)
@@ -23,6 +35,7 @@ GEM
     hashdiff (0.3.0)
     hashie (3.4.3)
     highline (1.7.8)
+    i18n (0.7.0)
     jeweler (2.0.1)
       builder
       bundler (>= 1.0)
@@ -34,7 +47,9 @@ GEM
       rdoc
     json (1.8.3)
     jwt (1.5.1)
+    method_source (0.8.2)
     mini_portile2 (2.0.0)
+    minitest (5.8.4)
     multi_json (1.11.2)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
@@ -49,6 +64,10 @@ GEM
     parser (2.3.0.4)
       ast (~> 2.2)
     powerpack (0.1.1)
+    pry (0.10.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
     rack (1.6.4)
     rainbow (2.1.0)
     rake (10.5.0)
@@ -75,7 +94,10 @@ GEM
       json (~> 1.8)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
+    slop (3.6.0)
     thread_safe (0.3.5)
+    tzinfo (1.2.2)
+      thread_safe (~> 0.1)
     unicode-display_width (0.3.1)
     webmock (1.22.6)
       addressable (>= 2.3.6)
@@ -86,8 +108,13 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activesupport
   bundler (~> 1.0)
+  concurrent-ruby
+  concurrent-ruby-edge
+  concurrent-ruby-ext
   jeweler (~> 2.0.1)
+  pry (~> 0.10.3)
   rdoc (~> 3.12)
   rspec (~> 2.8.0)
   rubocop (~> 0.37.2)

@@ -1,4 +1,4 @@
 module Clientura
   # The current Typhoeus version.
-  VERSION = '1.0.1'.freeze
+  VERSION = File.read(File.expand_path('../../../VERSION/', __FILE__)).freeze
 end
