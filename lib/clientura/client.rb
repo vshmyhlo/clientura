@@ -16,16 +16,13 @@ module Clientura
         @registered_middleware ||= {}
       end
 
-      def get(name, path: nil, headers: {})
-        register_endpoint(name, verb: :get,
-                                path: path || name.to_s,
-                                headers: headers)
+      def get(name, path: nil)
+        register_endpoint(name, verb: :get, path: path || name.to_s)
       end
 
-      def register_endpoint(name, verb:, path:, headers: {})
+      def register_endpoint(name, verb:, path:)
         registered_endpoints[name] = Endpoint.new verb,
                                                   path,
-                                                  headers,
                                                   [*@middleware_context],
                                                   [*@pipes_context]
 
@@ -87,12 +84,6 @@ module Clientura
                  endpoint.path
                end
 
-        headers = if endpoint.headers.respond_to?(:call)
-                    endpoint.headers.call(params)
-                  else
-                    endpoint.headers
-                  end
-
         http = endpoint.middleware.map do |middleware|
           case middleware
           when Array
@@ -124,10 +115,6 @@ module Clientura
         end.reduce promise do |promise_, pipe|
           promise_.then(&pipe)
         end
-      end
-
-      def full_path_for(path)
-        URI.join URI.parse('http://127.0.0.1:3001'), path
       end
     end
   end
