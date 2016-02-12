@@ -38,11 +38,11 @@ module Clientura
         end
       end
 
-      def pipe(name, &callable)
+      def pipe(name, callable)
         registered_pipes[name] = callable
       end
 
-      def middleware(name, &callable)
+      def middleware(name, callable)
         registered_middleware[name] = callable
       end
 

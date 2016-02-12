@@ -7,15 +7,15 @@ describe Clientura::Client do
     Class.new do
       include Clientura::Client
 
-      middleware(:static_token) { |req, *_, token| req.headers(Token: token) }
-      middleware(:init_token) { |req, instance, *_| req.headers(token: instance.config.fetch(:token)) }
-      middleware(:token_passer) { |req, *_, params| req.headers(token: params.fetch(:token)) }
-      middleware(:configurable_uri) do |req, instance, *_|
+      middleware :static_token, -> (req, *_, token) { req.headers(Token: token) }
+      middleware :init_token, -> (req, instance, *_) { req.headers(token: instance.config.fetch(:token)) }
+      middleware :token_passer, -> (req, *_, params) { req.headers(token: params.fetch(:token)) }
+      middleware :configurable_uri, lambda { |req, instance, *_|
         req.update(:uri) { |uri_| URI.join instance.config.fetch(:uri), uri_ }
-      end
+      }
 
-      pipe(:body_retriever) { |res| res.body.to_s }
-      pipe(:parser) { |res, parser| parser.parse res }
+      pipe :body_retriever, -> (res) { res.body.to_s }
+      pipe :parser, -> (res, parser) { parser.parse res }
 
       use_middleware :configurable_uri do
         pipe_through :body_retriever do
