@@ -37,6 +37,8 @@ Gem::Specification.new do |s|
     "clientura.gemspec",
     "lib/clientura.rb",
     "lib/clientura/client.rb",
+    "lib/clientura/client/endpoint.rb",
+    "lib/clientura/client/request.rb",
     "lib/clientura/version.rb",
     "spec/clientura/client_spec.rb",
     "spec/clientura_spec.rb",

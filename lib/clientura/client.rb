@@ -1,12 +1,8 @@
+require 'clientura/client/request'
+require 'clientura/client/endpoint'
+
 module Clientura
   module Client
-    Endpoint = Struct.new(:verb, :path, :headers, :middleware, :pipes)
-
-    def self.included(klass)
-      klass.extend ClassMethods
-      klass.include InstanceMethods
-    end
-
     module ClassMethods
       def registered_endpoints
         @registered_endpoints ||= {}
@@ -42,11 +38,11 @@ module Clientura
         end
       end
 
-      def pipe(name, callable)
+      def pipe(name, &callable)
         registered_pipes[name] = callable
       end
 
-      def middleware(name, callable)
+      def middleware(name, &callable)
         registered_middleware[name] = callable
       end
 
@@ -109,14 +105,12 @@ module Clientura
           else
             registered_middleware.fetch middleware
           end
-        end.reduce HTTP do |http_, middleware|
+        end.reduce Request.new do |http_, middleware|
           middleware.call http_, self, params
         end
 
         promise = Concurrent::Promise.execute do
-          http
-            .headers(headers)
-            .send(endpoint.verb, full_path_for(path), params: params)
+          http.send(endpoint.verb, path, params: params)
         end
 
         endpoint.pipes.map do |pipe|
