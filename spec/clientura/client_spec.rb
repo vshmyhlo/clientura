@@ -15,15 +15,6 @@ describe Clientura::Client do
       middleware :configurable_uri, lambda {
         request.update(:uri) { |uri_| URI.join instance.config.fetch(:uri), uri_ }
       }
-      middleware :zip, lambda { |*endpoints|
-        # super ugly :D
-
-        Clientura.zip(*endpoints.map do |e|
-          instance.send "#{e}_promise", params
-        end) do |left, right|
-          request.update(:json) { |p| p.merge sum: left + right }
-        end
-      }
 
       pipe :body_retriever, -> (res) { res.body.to_s }
       pipe :parser, -> (res, parser) { parser.parse res }
@@ -73,7 +64,7 @@ describe Clientura::Client do
 
       use_middleware :configurable_uri do
         pipe_through :body_retriever, [:parser, JSON], :data_retriever do
-          use_middleware :send_as_json, [:zip, :left_operand, :right_operand] do
+          use_middleware :send_as_json do
             post :sum
           end
 
@@ -82,6 +73,13 @@ describe Clientura::Client do
             get :right_operand
           end
         end
+      end
+
+      aggregator :fetch_sum do |key:|
+        left, right =
+          Clientura::RaisingPromise.zip(left_operand_promise(key: key),
+                                        right_operand_promise(key: key)).value
+        sum sum: left + right
       end
 
       def initialize(uri:, token:)
@@ -168,25 +166,29 @@ describe Clientura::Client do
     it { should eq 'data' => { 'foo' => 'bar' } }
   end
 
-  describe 'Concurrent API' do
-    describe '#sum' do
-      context 'with valid key' do
-        subject { client.sum key: 'Secret' }
+  describe '#sum' do
+    subject { client.sum sum: sum }
 
-        it { should eq true }
-      end
+    let(:sum) { client.left_operand(key: 'Secret') + client.right_operand(key: 'Secret') }
 
-      context 'with invalid key' do
-        subject { -> { client.sum key: '' } }
+    it { should eq true }
+  end
 
-        it { should raise_error(NoMethodError, "undefined method `+' for nil:NilClass") }
-      end
+  describe 'fetch_sum' do
+    subject { -> { client.fetch_sum key: key } }
+
+    context 'with valid key' do
+      subject { super().call }
+
+      let(:key) { 'Secret' }
+
+      it { should be true }
     end
 
-    describe '#sum_promise' do
-      subject { client.sum_promise(key: 'Secret').value }
+    context 'with invalid key' do
+      let(:key) { '' }
 
-      it { should eq true }
+      it { should raise_error(NoMethodError, "undefined method `+' for nil:NilClass") }
     end
   end
 

@@ -1,5 +1,11 @@
 module Clientura
   class RaisingPromise < SimpleDelegator
+    class << self
+      def zip(*promises)
+        new Concurrent::Promise.zip(*promises)
+      end
+    end
+
     def initialize(source = nil, &block)
       super source.present? ? source : Concurrent::Promise.new(&block)
     end

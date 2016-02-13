@@ -48,6 +48,10 @@ module Clientura
         registered_middleware[name] = callable
       end
 
+      def aggregator(name, &block)
+        define_method name, &block
+      end
+
       def pipe_through(*pipes)
         @pipes_context ||= []
         @pipes_context.push(*pipes)
