@@ -76,10 +76,10 @@ describe Clientura::Client do
       end
 
       aggregator :fetch_sum do |key:|
-        left, right =
-          Clientura::RaisingPromise.zip(left_operand_promise(key: key),
-                                        right_operand_promise(key: key)).value
-        sum sum: left + right
+        Clientura::RaisingPromise
+          .zip(left_operand_promise(key: key), right_operand_promise(key: key))
+          .then { |left, right| sum sum: left + right }
+          .value
       end
 
       def initialize(uri:, token:)

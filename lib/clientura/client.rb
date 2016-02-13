@@ -36,7 +36,7 @@ module Clientura
         end
 
         define_method name do |**params|
-          promise = send("#{name}_promise", params).value
+          send("#{name}_promise", params).value
         end
       end
 
@@ -49,7 +49,13 @@ module Clientura
       end
 
       def aggregator(name, &block)
-        define_method name, &block
+        define_method "#{name}_promise" do |*args|
+          RaisingPromise.new { instance_exec(*args, &block) }.execute
+        end
+
+        define_method name do |*args|
+          send("#{name}_promise", *args).value
+        end
       end
 
       def pipe_through(*pipes)
