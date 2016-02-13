@@ -3,6 +3,22 @@ require 'clientura/client/endpoint'
 
 module Clientura
   module Client
+    class MiddlewareFunctionContext
+      attr_accessor :request, :instance, :params
+
+      def initialize(request:, instance:, params:, callable:, arguments:)
+        @request   = request
+        @instance  = instance
+        @params    = params
+        @callable  = callable
+        @arguments = arguments
+      end
+
+      def call
+        instance_exec(*@arguments, &@callable)
+      end
+    end
+
     module ClassMethods
       def registered_endpoints
         @registered_endpoints ||= {}
@@ -97,16 +113,20 @@ module Clientura
           case middleware
           when Array
             name, *args = middleware
-            lambda do |http_, instance, params_|
-              registered_middleware
-                .fetch(name)
-                .call(http_, instance, params_, *args)
-            end
+
+            { callable: registered_middleware.fetch(name),
+              arguments: args }
           else
-            registered_middleware.fetch middleware
+            { callable: registered_middleware.fetch(middleware),
+              arguments: [] }
           end
-        end.reduce Request.new do |http_, middleware|
-          middleware.call http_, self, params
+        end.reduce Request.new do |http_, callable:, arguments:|
+          middleware = MiddlewareFunctionContext.new(request: http_,
+                                                     instance: self,
+                                                     params: params,
+                                                     callable: callable,
+                                                     arguments: arguments)
+          middleware.call
         end
 
         promise = Concurrent::Promise.execute do

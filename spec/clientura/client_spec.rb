@@ -9,17 +9,13 @@ describe Clientura::Client do
 
       # TODO: pass params as query or json middleware and stuff
 
-      middleware :static_token, -> (req, _inst, _params, token) { req.headers(Token: token) }
-      middleware :init_token, -> (req, inst, _params) { req.headers(token: inst.config.fetch(:token)) }
-      middleware :token_passer, -> (req, _inst, params) { req.headers(token: params.fetch(:token)) }
-      middleware :send_as_json, lambda { |req, _inst, params|
-        req.update(:json) { params }
-      }
-      middleware :pass_as_query, lambda { |req, _inst, params|
-        req.update(:params) { |p| p.merge params }
-      }
-      middleware :configurable_uri, lambda { |req, instance, _params|
-        req.update(:uri) { |uri_| URI.join instance.config.fetch(:uri), uri_ }
+      middleware :static_token, -> (token) { request.headers(Token: token) }
+      middleware :init_token, -> { request.headers(token: instance.config.fetch(:token)) }
+      middleware :token_passer, -> { request.headers(token: params.fetch(:token)) }
+      middleware :send_as_json, -> { request.update(:json) { params } }
+      middleware :pass_as_query, -> { request.update(:params) { |p| p.merge params } }
+      middleware :configurable_uri, lambda {
+        request.update(:uri) { |uri_| URI.join instance.config.fetch(:uri), uri_ }
       }
 
       pipe :body_retriever, -> (res) { res.body.to_s }
