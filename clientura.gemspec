@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Vlad Shmyhlo"]
-  s.date = "2016-02-12"
+  s.date = "2016-02-13"
   s.description = "TODO: longer description of your gem"
   s.email = "aion.stu@gmail.com"
   s.extra_rdoc_files = [
@@ -38,7 +38,9 @@ Gem::Specification.new do |s|
     "lib/clientura.rb",
     "lib/clientura/client.rb",
     "lib/clientura/client/endpoint.rb",
+    "lib/clientura/client/middleware_function_context.rb",
     "lib/clientura/client/request.rb",
+    "lib/clientura/raising_promise.rb",
     "lib/clientura/version.rb",
     "spec/clientura/client_spec.rb",
     "spec/clientura_spec.rb",

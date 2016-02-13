@@ -15,9 +15,19 @@ describe Clientura::Client do
       middleware :configurable_uri, lambda {
         request.update(:uri) { |uri_| URI.join instance.config.fetch(:uri), uri_ }
       }
+      middleware :zip, lambda { |*endpoints|
+        # super ugly :D
+
+        Clientura.zip(*endpoints.map do |e|
+          instance.send "#{e}_promise", params
+        end) do |left, right|
+          request.update(:json) { |p| p.merge sum: left + right }
+        end
+      }
 
       pipe :body_retriever, -> (res) { res.body.to_s }
       pipe :parser, -> (res, parser) { parser.parse res }
+      pipe :data_retriever, -> (res) { res['data'] }
 
       use_middleware :configurable_uri do
         pipe_through :body_retriever do
@@ -57,6 +67,19 @@ describe Clientura::Client do
 
           use_middleware :send_as_json do
             post :send_json, path: 'data'
+          end
+        end
+      end
+
+      use_middleware :configurable_uri do
+        pipe_through :body_retriever, [:parser, JSON], :data_retriever do
+          use_middleware :send_as_json, [:zip, :left_operand, :right_operand] do
+            post :sum
+          end
+
+          use_middleware :pass_as_query do
+            get :left_operand
+            get :right_operand
           end
         end
       end
@@ -144,4 +167,28 @@ describe Clientura::Client do
 
     it { should eq 'data' => { 'foo' => 'bar' } }
   end
+
+  describe 'Concurrent API' do
+    describe '#sum' do
+      context 'with valid key' do
+        subject { client.sum key: 'Secret' }
+
+        it { should eq true }
+      end
+
+      context 'with invalid key' do
+        subject { -> { client.sum key: '' } }
+
+        it { should raise_error(NoMethodError, "undefined method `+' for nil:NilClass") }
+      end
+    end
+
+    describe '#sum_promise' do
+      subject { client.sum_promise(key: 'Secret').value }
+
+      it { should eq true }
+    end
+  end
+
+  # it('__run_server__', :focus) { binding.pry }
 end

@@ -36,12 +36,7 @@ module Clientura
         end
 
         define_method name do |**params|
-          promise = send("#{name}_promise", params)
-          res = promise.value
-
-          raise promise.reason if promise.rejected?
-
-          res
+          promise = send("#{name}_promise", params).value
         end
       end
 
@@ -102,7 +97,10 @@ module Clientura
                  endpoint.path
                end
 
-        http = endpoint.middleware.map do |middleware|
+        # promise = Concurrent::Promise.execute { Request.new }
+        promise = RaisingPromise.new { Request.new }.execute
+
+        promise = endpoint.middleware.map do |middleware|
           case middleware
           when Array
             name, *args = middleware
@@ -113,16 +111,18 @@ module Clientura
             { callable: registered_middleware.fetch(middleware),
               arguments: [] }
           end
-        end.reduce Request.new do |http_, callable:, arguments:|
-          middleware = MiddlewareFunctionContext.new(request: http_,
-                                                     instance: self,
-                                                     params: params,
-                                                     callable: callable,
-                                                     arguments: arguments)
-          middleware.call
+        end.reduce promise do |http_, callable:, arguments:|
+          http_.then do |http__|
+            middleware = MiddlewareFunctionContext.new(request: http__,
+                                                       instance: self,
+                                                       params: params,
+                                                       callable: callable,
+                                                       arguments: arguments)
+            middleware.call
+          end
         end
 
-        promise = Concurrent::Promise.execute do
+        promise = promise.then do |http|
           http.send(endpoint.verb, path)
         end
 
