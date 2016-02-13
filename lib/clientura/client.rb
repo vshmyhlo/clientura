@@ -1,24 +1,9 @@
 require 'clientura/client/request'
 require 'clientura/client/endpoint'
+require 'clientura/client/middleware_function_context'
 
 module Clientura
   module Client
-    class MiddlewareFunctionContext
-      attr_accessor :request, :instance, :params
-
-      def initialize(request:, instance:, params:, callable:, arguments:)
-        @request   = request
-        @instance  = instance
-        @params    = params
-        @callable  = callable
-        @arguments = arguments
-      end
-
-      def call
-        instance_exec(*@arguments, &@callable)
-      end
-    end
-
     module ClassMethods
       def registered_endpoints
         @registered_endpoints ||= {}
@@ -98,7 +83,15 @@ module Clientura
         end
       end
 
-      attr_accessor :config
+      attr_writer :config
+
+      def config
+        @config ||= {}
+      end
+
+      def save_config(**params)
+        self.config = config.merge params
+      end
 
       def call_endpoint(name, **params)
         endpoint = registered_endpoints.fetch(name)

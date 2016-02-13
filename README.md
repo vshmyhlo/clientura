@@ -5,11 +5,13 @@ specs example
 class RandomApiClient
   include Clientura::Client
 
-  middleware :static_token, -> (req, *_, token) { req.headers(Token: token) }
-  middleware :init_token, -> (req, instance, *_) { req.headers(token: instance.config.fetch(:token)) }
-  middleware :token_passer, -> (req, *_, params) { req.headers(token: params.fetch(:token)) }
-  middleware :configurable_uri, lambda { |req, instance, *_|
-    req.update(:uri) { |uri_| URI.join instance.config.fetch(:uri), uri_ }
+  middleware :static_token, -> (token) { request.headers(Token: token) }
+  middleware :init_token, -> { request.headers(token: instance.config.fetch(:token)) }
+  middleware :token_passer, -> { request.headers(token: params.fetch(:token)) }
+  middleware :send_as_json, -> { request.update(:json) { params } }
+  middleware :pass_as_query, -> { request.update(:params) { |p| p.merge params } }
+  middleware :configurable_uri, lambda {
+    request.update(:uri) { |uri_| URI.join instance.config.fetch(:uri), uri_ }
   }
 
   pipe :body_retriever, -> (res) { res.body.to_s }
@@ -24,7 +26,10 @@ class RandomApiClient
         get :resource, path: 'res'
         get :name
         get :echo_argument, path: -> (params) { "echo_argument/#{params[:argument]}" }
-        get :echo_param
+
+        use_middleware :pass_as_query do
+          get :echo_param
+        end
       end
     end
 
@@ -47,14 +52,15 @@ class RandomApiClient
       end
 
       get :configurable_uri_resource, path: 'res'
+
+      use_middleware :send_as_json do
+        post :send_json, path: 'data'
+      end
     end
   end
 
   def initialize(uri:, token:)
-    self.config = {
-      uri: URI.parse(uri),
-      token: token
-    }
+    save_config uri: URI.parse(uri), token: token
   end
 end
 ```

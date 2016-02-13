@@ -7,8 +7,6 @@ describe Clientura::Client do
     Class.new do
       include Clientura::Client
 
-      # TODO: pass params as query or json middleware and stuff
-
       middleware :static_token, -> (token) { request.headers(Token: token) }
       middleware :init_token, -> { request.headers(token: instance.config.fetch(:token)) }
       middleware :token_passer, -> { request.headers(token: params.fetch(:token)) }
@@ -64,10 +62,7 @@ describe Clientura::Client do
       end
 
       def initialize(uri:, token:)
-        self.config = {
-          uri: URI.parse(uri),
-          token: token
-        }
+        save_config uri: URI.parse(uri), token: token
       end
     end
   end
