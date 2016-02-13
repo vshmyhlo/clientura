@@ -22,4 +22,8 @@ class TestServer < Sinatra::Base
   get '/echo_param' do
     json data: params['param']
   end
+
+  post '/data' do
+    json data: JSON.parse(request.body.read)['json_data']
+  end
 end

@@ -35,6 +35,7 @@ desc 'Code coverage detail'
 task :simplecov do
   ENV['COVERAGE'] = 'true'
   Rake::Task['spec'].execute
+  `google-chrome coverage/index.html`
 end
 
 task default: :spec

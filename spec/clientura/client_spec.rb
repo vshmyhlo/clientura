@@ -2,15 +2,23 @@ describe Clientura::Client do
   subject { client }
 
   let(:uri) { 'http://localhost:3001' }
-  let(:client) { klass.new(uri: uri, token: 'InitToken') }
+  let(:client) { klass.new(uri: uri, token: 'InitializationToken') }
   let(:klass) do
     Class.new do
       include Clientura::Client
 
-      middleware :static_token, -> (req, *_, token) { req.headers(Token: token) }
-      middleware :init_token, -> (req, instance, *_) { req.headers(token: instance.config.fetch(:token)) }
-      middleware :token_passer, -> (req, *_, params) { req.headers(token: params.fetch(:token)) }
-      middleware :configurable_uri, lambda { |req, instance, *_|
+      # TODO: pass params as query or json middleware and stuff
+
+      middleware :static_token, -> (req, _inst, _params, token) { req.headers(Token: token) }
+      middleware :init_token, -> (req, inst, _params) { req.headers(token: inst.config.fetch(:token)) }
+      middleware :token_passer, -> (req, _inst, params) { req.headers(token: params.fetch(:token)) }
+      middleware :send_as_json, lambda { |req, _inst, params|
+        req.update(:json) { params }
+      }
+      middleware :pass_as_query, lambda { |req, _inst, params|
+        req.update(:params) { |p| p.merge params }
+      }
+      middleware :configurable_uri, lambda { |req, instance, _params|
         req.update(:uri) { |uri_| URI.join instance.config.fetch(:uri), uri_ }
       }
 
@@ -26,7 +34,10 @@ describe Clientura::Client do
             get :resource, path: 'res'
             get :name
             get :echo_argument, path: -> (params) { "echo_argument/#{params[:argument]}" }
-            get :echo_param
+
+            use_middleware :pass_as_query do
+              get :echo_param
+            end
           end
         end
 
@@ -49,6 +60,10 @@ describe Clientura::Client do
           end
 
           get :configurable_uri_resource, path: 'res'
+
+          use_middleware :send_as_json do
+            post :send_json, path: 'data'
+          end
         end
       end
 
@@ -124,12 +139,18 @@ describe Clientura::Client do
   describe 'try_init_token' do
     subject { client.try_init_token }
 
-    it { should eq 'data' => 'InitToken' }
+    it { should eq 'data' => 'InitializationToken' }
   end
 
   describe 'configurable_uri_resource' do
     subject { client.configurable_uri_resource }
 
     it { should eq 'data' => 'resource' }
+  end
+
+  describe '#send_json' do
+    subject { client.send_json json_data: { foo: :bar } }
+
+    it { should eq 'data' => { 'foo' => 'bar' } }
   end
 end

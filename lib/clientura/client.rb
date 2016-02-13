@@ -20,6 +20,10 @@ module Clientura
         register_endpoint(name, verb: :get, path: path || name.to_s)
       end
 
+      def post(name, path: nil)
+        register_endpoint(name, verb: :post, path: path || name.to_s)
+      end
+
       def register_endpoint(name, verb:, path:)
         registered_endpoints[name] = Endpoint.new verb,
                                                   path,
@@ -31,7 +35,12 @@ module Clientura
         end
 
         define_method name do |**params|
-          send("#{name}_promise", params).value
+          promise = send("#{name}_promise", params)
+          res = promise.value
+
+          raise promise.reason if promise.rejected?
+
+          res
         end
       end
 
@@ -101,7 +110,7 @@ module Clientura
         end
 
         promise = Concurrent::Promise.execute do
-          http.send(endpoint.verb, path, params: params)
+          http.send(endpoint.verb, path)
         end
 
         endpoint.pipes.map do |pipe|

@@ -26,6 +26,13 @@ require 'clientura'
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
+  # config.expose_current_running_example_as :example
+  config.raise_errors_for_deprecations!
+  config.run_all_when_everything_filtered = true
+  config.filter_run focus: true
+  # config.mock_with :rspec
+  # config.use_transactional_fixtures = false
+
   config.order = :rand
 
   config.before(:suite) do
