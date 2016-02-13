@@ -68,6 +68,10 @@ describe Clientura::Client do
             post :sum
           end
 
+          get :comments, path: -> (params) { "comments/#{params[:id]}" }
+          get :users, path: -> (params) { "users/#{params[:id]}" }
+          get :tags, path: -> (params) { "tags/#{params[:id]}" }
+
           use_middleware :pass_as_query do
             get :left_operand
             get :right_operand
@@ -80,6 +84,17 @@ describe Clientura::Client do
           .zip(left_operand_promise(key: key), right_operand_promise(key: key))
           .then { |left, right| sum sum: left + right }
           .value
+      end
+
+      aggregator :fetch_comment do |id:|
+        c = comments id: id
+        user_id, tag_id = c.values_at 'user_id', 'tag_id'
+        u, t = Clientura::RaisingPromise
+               .zip(users_promise(id: user_id), tags_promise(id: tag_id)).value
+
+        { 'comment' => c,
+          'user' => u,
+          'tag' => t }
       end
 
       def initialize(uri:, token:)
@@ -174,7 +189,7 @@ describe Clientura::Client do
     it { should eq true }
   end
 
-  describe 'fetch_sum' do
+  describe '#fetch_sum' do
     subject { -> { client.fetch_sum key: key } }
 
     context 'with valid key' do
@@ -189,6 +204,24 @@ describe Clientura::Client do
       let(:key) { '' }
 
       it { should raise_error(NoMethodError, "undefined method `+' for nil:NilClass") }
+    end
+  end
+
+  describe '#fetch_comment' do
+    subject { client.fetch_comment id: 1 }
+
+    it 'should return correct data' do
+      should eq('comment' => {
+                  'id' => '1',
+                  'user_id' => '2',
+                  'tag_id' => '3'
+                },
+                'user' => {
+                  'id' => '2'
+                },
+                'tag' => {
+                  'id' => '3'
+                })
     end
   end
 

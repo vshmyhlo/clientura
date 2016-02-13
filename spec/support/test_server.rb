@@ -43,4 +43,18 @@ class TestServer < Sinatra::Base
     sum = JSON.parse(request.body.read)['sum']
     json data: seed == sum
   end
+
+  get '/comments/:id' do
+    json data: {
+      '1' => { 'id' => '1', 'user_id' => '2', 'tag_id' => '3' }
+    }[params[:id]]
+  end
+
+  get '/users/:id' do
+    json data: { '2' => { 'id' => '2' } }[params[:id]]
+  end
+
+  get '/tags/:id' do
+    json data: { '3' => { 'id' => '3' } }[params[:id]]
+  end
 end
