@@ -7,13 +7,13 @@ describe Clientura::Client do
     Class.new do
       include Clientura::Client
 
-      middleware :static_token, -> (token) { request.headers(Token: token) }
-      middleware :init_token, -> { request.headers(token: instance.config.fetch(:token)) }
-      middleware :token_passer, -> { request.headers(token: params.fetch(:token)) }
-      middleware :send_as_json, -> { request.update(:json) { params } }
-      middleware :pass_as_query, -> { request.update(:params) { |p| p.merge params } }
+      middleware :static_token, -> (token) { headers(Token: token) }
+      middleware :init_token, -> { headers(token: instance.config[:token]) }
+      middleware :token_passer, -> { headers(token: params[:token]) }
+      middleware :send_as_json, -> { update(:json) { params } }
+      middleware :pass_as_query, -> { update(:params) { |p| p.merge params } }
       middleware :configurable_uri, lambda {
-        request.update(:uri) { |uri_| URI.join instance.config.fetch(:uri), uri_ }
+        update(:uri) { |uri_| URI.join instance.config[:uri], uri_ }
       }
 
       pipe :body_retriever, -> (res) { res.body.to_s }

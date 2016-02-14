@@ -4,6 +4,11 @@ require 'clientura/client/middleware_function_context'
 
 module Clientura
   module Client
+    def self.included(klass)
+      klass.extend ClassMethods
+      klass.include InstanceMethods
+    end
+
     module ClassMethods
       def registered_endpoints
         @registered_endpoints ||= {}

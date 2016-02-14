@@ -32,10 +32,5 @@ module Clientura
         Request.new(http.headers(*args), config)
       end
     end
-
-    def self.included(klass)
-      klass.extend ClassMethods
-      klass.include InstanceMethods
-    end
   end
 end
