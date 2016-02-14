@@ -9,9 +9,9 @@ describe Clientura::Client do
 
       middleware :static_token, -> (token) { headers(Token: token) }
       middleware :init_token, -> { headers(token: instance.config[:token]) }
-      middleware :token_passer, -> { headers(token: params[:token]) }
-      middleware :send_as_json, -> { update(:json) { params } }
-      middleware :pass_as_query, -> { update(:params) { |p| p.merge params } }
+      middleware :token_passer, -> { headers(token: args[:token]) }
+      middleware :send_as_json, -> { update(:json) { args } }
+      middleware :pass_as_query, -> { update(:params) { |p| p.merge args } }
       middleware :configurable_uri, lambda {
         update(:uri) { |uri_| URI.join instance.config[:uri], uri_ }
       }

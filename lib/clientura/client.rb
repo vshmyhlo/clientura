@@ -36,12 +36,12 @@ module Clientura
                                                   [*@middleware_context],
                                                   [*@pipes_context]
 
-        define_method "#{name}_promise" do |**params|
-          call_endpoint(name, params)
+        define_method "#{name}_promise" do |**args|
+          call_endpoint(name, args)
         end
 
-        define_method name do |**params|
-          send("#{name}_promise", params).value
+        define_method name do |**args|
+          send("#{name}_promise", args).value
         end
       end
 
@@ -99,15 +99,15 @@ module Clientura
         @config ||= {}
       end
 
-      def save_config(**params)
-        self.config = config.merge params
+      def save_config(**args)
+        self.config = config.merge args
       end
 
-      def call_endpoint(name, **params)
+      def call_endpoint(name, **args)
         endpoint = registered_endpoints.fetch(name)
 
         path = if endpoint.path.respond_to?(:call)
-                 endpoint.path.call(params)
+                 endpoint.path.call(args)
                else
                  endpoint.path
                end
@@ -118,21 +118,21 @@ module Clientura
         promise = endpoint.middleware.map do |middleware|
           case middleware
           when Array
-            name, *args = middleware
+            name, *config = middleware
 
             { callable: registered_middleware.fetch(name),
-              arguments: args }
+              config: config }
           else
             { callable: registered_middleware.fetch(middleware),
-              arguments: [] }
+              config: [] }
           end
-        end.reduce promise do |http_, callable:, arguments:|
+        end.reduce promise do |http_, callable:, config:|
           http_.then do |http__|
             middleware = MiddlewareFunctionContext.new(request: http__,
                                                        instance: self,
-                                                       params: params,
+                                                       args: args,
                                                        callable: callable,
-                                                       arguments: arguments)
+                                                       config: config)
             middleware.call
           end
         end
@@ -144,8 +144,8 @@ module Clientura
         endpoint.pipes.map do |pipe|
           case pipe
           when Array
-            name, *args = pipe
-            -> (res) { registered_pipes.fetch(name).call(res, *args) }
+            name, *config = pipe
+            -> (res) { registered_pipes.fetch(name).call(res, *config) }
           else
             registered_pipes.fetch pipe
           end
