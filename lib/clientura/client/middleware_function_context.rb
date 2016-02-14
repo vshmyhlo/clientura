@@ -1,15 +1,15 @@
 module Clientura
   module Client
     class MiddlewareFunctionContext < SimpleDelegator
-      attr_accessor :request, :instance, :args
+      attr_accessor :client, :args
 
-      def initialize(request:, instance:, args:, callable:, config:)
+      def initialize(request:, client:, args:, callable:, config:)
         # headers
         # params
         # json
         # uri
-        @request  = request
-        @instance = instance
+        @request = request
+        @client = client
         @args     = args
         @callable = callable
         @config   = config

@@ -129,7 +129,7 @@ module Clientura
         end.reduce promise do |http_, callable:, config:|
           http_.then do |http__|
             middleware = MiddlewareFunctionContext.new(request: http__,
-                                                       instance: self,
+                                                       client: self,
                                                        args: args,
                                                        callable: callable,
                                                        config: config)

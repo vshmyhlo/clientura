@@ -8,12 +8,12 @@ describe Clientura::Client do
       include Clientura::Client
 
       middleware :static_token, -> (token) { headers(Token: token) }
-      middleware :init_token, -> { headers(token: instance.config[:token]) }
+      middleware :init_token, -> { headers(token: client.config[:token]) }
       middleware :token_passer, -> { headers(token: args[:token]) }
       middleware :send_as_json, -> { update(:json) { args } }
       middleware :pass_as_query, -> { update(:params) { |p| p.merge args } }
       middleware :configurable_uri, lambda {
-        update(:uri) { |uri_| URI.join instance.config[:uri], uri_ }
+        update(:uri) { |uri| URI.join client.config[:uri], uri }
       }
 
       pipe :body_retriever, -> (res) { res.body.to_s }
