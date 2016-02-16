@@ -35,7 +35,7 @@ RSpec.configure do |config|
 
   config.order = :rand
 
-  config.before(:suite) do
+  config.before(:suite) do |_example|
     pid = Process.fork do
       trap(:INT) { Rack::Handler::WEBrick.shutdown }
       Rack::Handler::WEBrick.run TestServer.new,

@@ -1,4 +1,6 @@
 class TestServer < Sinatra::Base
+  register Sinatra::Namespace
+
   get '/' do
     json data: 'root'
   end
@@ -56,5 +58,29 @@ class TestServer < Sinatra::Base
 
   get '/tags/:id' do
     json data: { '3' => { 'id' => '3' } }[params[:id]]
+  end
+
+  namespace '/real_world' do
+    get { 200 }
+
+    get '/pass_token' do
+      env['HTTP_AUTHTOKEN'] == 'Secret' ? 200 : 403
+    end
+
+    get '/parse_response' do
+      json data: 'Awesome!'
+    end
+
+    get '/pass_query_string' do
+      params[:echo]
+    end
+
+    get '/get_answer_header' do
+      headers 'Answer' => 'Awesome!'
+    end
+
+    get '/namespace/namespaced' do
+      200
+    end
   end
 end
