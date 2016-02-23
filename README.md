@@ -1,102 +1,68 @@
-# clientura
+# Clientura
 
-example from specs
+### Basic concepts
+
+Create client class
+``` ruby 
+class RandomApiClient
+  include Clientura::Client
+end
+```
+Define middleware (blocks which can be composed to configure your request before it is sent)
 ```ruby
 class RandomApiClient
   include Clientura::Client
 
-  middleware :static_token, -> (token) { headers(Token: token) }
-  middleware :init_token, -> { headers(token: client.config[:token]) }
-  middleware :token_passer, -> { headers(token: args[:token]) }
-  middleware :send_as_json, -> { update(:json) { args } }
-  middleware :pass_as_query, -> { update(:params) { |p| p.merge args } }
-  middleware :configurable_uri, lambda {
-    update(:uri) { |uri| URI.join client.config[:uri], uri }
-  }
+  middleware :with_token, -> { headers(token: client.config[:token]) }
+end
+```
+Define pipes (blocks which can be composed to process response)
+```ruby
+class RandomApiClient
+  include Clientura::Client
+
+  middleware :with_token, -> { headers(token: client.config[:token]) }
+
+  pipe :body_retriever, -> (res) { res.body.to_s }
+  pipe :parser, -> (res, parser) { parser.parse res }
+  pipe :data_retriever, -> (res) { res['data'] }
+end
+```
+Compose this stuff!
+```ruby
+class RandomApiClient
+  include Clientura::Client
+
+  middleware :with_token, -> { headers(token: client.config[:token]) }
 
   pipe :body_retriever, -> (res) { res.body.to_s }
   pipe :parser, -> (res, parser) { parser.parse res }
   pipe :data_retriever, -> (res) { res['data'] }
 
-  use_middleware :configurable_uri do
-    pipe_through :body_retriever do
-      get :resource_raw, path: 'res'
-
-      pipe_through [:parser, JSON] do
-        get :root, path: '/'
-        get :resource, path: 'res'
-        get :name
-        get :echo_argument, path: -> (params) { "echo_argument/#{params[:argument]}" }
-
-        use_middleware :pass_as_query do
-          get :echo_param
-        end
-      end
-    end
-
-    pipe_through :body_retriever, [:parser, JSON] do
-      use_middleware [:static_token, 'StaticToken'] do
-        get :try_static_token, path: 'echo_header'
-      end
-
-      use_middleware [:static_token, 'Token'] do
-        get :echo_header_const, path: 'echo_header'
-      end
-
-      use_middleware :token_passer do
-        get :try_token_passer, path: 'echo_header'
-        get :echo_header
-      end
-
-      use_middleware :init_token do
-        get :try_init_token, path: 'echo_header'
-      end
-
-      get :configurable_uri_resource, path: 'res'
-
-      use_middleware :send_as_json do
-        post :send_json, path: 'data'
-      end
-    end
-  end
-
-  use_middleware :configurable_uri do
+  use_middleware :with_token do
     pipe_through :body_retriever, [:parser, JSON], :data_retriever do
-      use_middleware :send_as_json do
-        post :sum
-      end
-
-      get :comments, path: -> (params) { "comments/#{params[:id]}" }
-      get :users, path: -> (params) { "users/#{params[:id]}" }
-      get :tags, path: -> (params) { "tags/#{params[:id]}" }
-
-      use_middleware :pass_as_query do
-        get :left_operand
-        get :right_operand
-      end
+      get :random_api_endpoint
+      get :same_with_custom_path, path: 'super-custom-path'
+      get :same_with_dynamic_path, path: -> (params) { "users/#{params[:id]}"}
     end
   end
-
-  aggregator :fetch_sum do |key:|
-    Clientura::RaisingPromise
-      .zip(left_operand_promise(key: key), right_operand_promise(key: key))
-      .then { |left, right| sum sum: left + right }
-      .value
+end
+```
+Also instance should be created with token which will be used by middleware
+```ruby
+# ...
+  def initialize(token:)
+    save_config token: token
   end
-
-  aggregator :fetch_comment do |id:|
-    c = comments id: id
-    user_id, tag_id = c.values_at 'user_id', 'tag_id'
-    u, t = Clientura::RaisingPromise
-           .zip(users_promise(id: user_id), tags_promise(id: tag_id)).value
-
-    { 'comment' => c,
-      'user' => u,
-      'tag' => t }
-  end
-
-  def initialize(uri:, token:)
-    save_config uri: URI.parse(uri), token: token
-  end
+# ...
+```
+Instantiate and use!
+```ruby
+client = RandomApiClient.new(token: 'Moms Birthday')
+client.random_api_endpoint
+client.random_api_endpoint_promise # yeap, asyncrony baby, backed by concurrent-ruby
+client.same_with_dynamic_path(id: 1)
+client.same_with_dynamic_path_promise(id: 1).then do |data_retrieved_through_pipes|
+  # process it ...
 end
 ```
