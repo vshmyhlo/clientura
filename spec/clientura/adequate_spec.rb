@@ -15,6 +15,8 @@ describe 'Ability to use this for solving real world problems',
       middleware :header_with_token, -> { headers AuthToken: client.config[:token] }
       middleware :pass_all_as_query_string, -> { update(:params) { args } }
       middleware :namespace, -> (namespace) { update(:uri) { |uri| URI.join uri, namespace } }
+      middleware :bad_middleware, -> { raise 'Some Exception' }
+      middleware :slow_middleware, -> { sleep 0.1; self }
 
       pipe :body_retriever, -> (res) { res.body.to_s }
       pipe :parser, -> (res, parser) { parser.parse res }
@@ -53,6 +55,14 @@ describe 'Ability to use this for solving real world problems',
         end
       end
 
+      use_middleware :bad_middleware do
+        get :raise_some_exception
+      end
+
+      use_middleware :slow_middleware, :bad_middleware do
+        get :slowly_raise_some_exception
+      end
+
       def initialize(uri:, token: nil)
         save_config uri: uri, token: token
       end
@@ -63,6 +73,54 @@ describe 'Ability to use this for solving real world problems',
     subject { super().root.status }
 
     it { should eq 200 }
+  end
+
+  describe 'My desire to see some exceptions' do
+    subject { -> { instance.raise_some_exception } }
+
+    it { should raise_error 'Some Exception' }
+  end
+
+  describe 'My desire to work with promise' do
+    context 'when no errors raised' do
+      subject { super().root_promise }
+
+      it { should be_pending }
+
+      it 'has correct value' do
+        expect(subject.value.status).to eq 200
+      end
+
+      context 'when awaited' do
+        before { subject.value }
+
+        it 'fulfills' do
+          expect(subject).to be_fulfilled
+        end
+      end
+    end
+
+    context 'when error raised' do
+      subject { super().slowly_raise_some_exception_promise }
+
+      it { should be_pending }
+
+      it 'has nil value' do
+        expect(subject.value).to be nil
+      end
+
+      context 'when awaited' do
+        before { subject.value }
+
+        it 'rejects' do
+          expect(subject).to be_rejected
+        end
+
+        it 'has correct message' do
+          expect(subject.reason.message).to eq 'Some Exception'
+        end
+      end
+    end
   end
 
   describe 'My desire to pass some token in header' do
