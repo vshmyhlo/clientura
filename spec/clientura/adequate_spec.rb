@@ -1,7 +1,7 @@
 describe 'Ability to use this for solving real world problems',
          test_server: :adequate do
   # Purpose of this spec is to define some real world use cases in a clean and
-  # readable manner to serve as an example of usage
+  # readable manner to serve as an example of usage.
 
   subject { instance }
 
@@ -19,6 +19,7 @@ describe 'Ability to use this for solving real world problems',
       pipe :body_retriever, -> (res) { res.body.to_s }
       pipe :parser, -> (res, parser) { parser.parse res }
       pipe :answer_header, -> (res) { res.headers['Answer'] }
+      pipe :data_retriever, -> (res) { res['data'] }
 
       use_middleware :configurable_uri do
         get :root, path: '/'
@@ -30,6 +31,12 @@ describe 'Ability to use this for solving real world problems',
         pipe_through :body_retriever do
           pipe_through [:parser, JSON] do
             get :parse_response
+
+            pipe_through :data_retriever do
+              get :comments, path: -> (params) { "comments/#{params[:id]}" }
+              get :users, path: -> (params) { "users/#{params[:id]}" }
+              get :attachments, path: -> (params) { "attachments/#{params[:id]}" }
+            end
           end
 
           use_middleware :pass_all_as_query_string do

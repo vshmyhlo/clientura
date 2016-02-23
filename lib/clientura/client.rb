@@ -36,12 +36,12 @@ module Clientura
                                                   [*@middleware_context],
                                                   [*@pipes_context]
 
-        define_method "#{name}_promise" do |**args|
-          call_endpoint(name, args)
+        define_method name do |**args|
+          call_endpoint name, args
         end
 
-        define_method name do |**args|
-          send("#{name}_promise", args).value
+        define_method "#{name}_promise" do |**args|
+          Concurrent::Promise.execute { send(name, args) }
         end
       end
 
@@ -51,16 +51,6 @@ module Clientura
 
       def middleware(name, callable)
         registered_middleware[name] = callable
-      end
-
-      def aggregator(name, &block)
-        define_method "#{name}_promise" do |*args|
-          RaisingPromise.new { instance_exec(*args, &block) }.execute
-        end
-
-        define_method name do |*args|
-          send("#{name}_promise", *args).value
-        end
       end
 
       def pipe_through(*pipes)
@@ -112,10 +102,9 @@ module Clientura
                  endpoint.path
                end
 
-        # promise = Concurrent::Promise.execute { Request.new }
-        promise = RaisingPromise.new { Request.new }.execute
+        request = Request.new
 
-        promise = endpoint.middleware.map do |middleware|
+        request = endpoint.middleware.map do |middleware|
           case middleware
           when Array
             name, *config = middleware
@@ -126,20 +115,16 @@ module Clientura
             { callable: registered_middleware.fetch(middleware),
               config: [] }
           end
-        end.reduce promise do |http_, callable:, config:|
-          http_.then do |http__|
-            middleware = MiddlewareFunctionContext.new(request: http__,
-                                                       client: self,
-                                                       args: args,
-                                                       callable: callable,
-                                                       config: config)
-            middleware.call
-          end
+        end.reduce request do |request_, callable:, config:|
+          middleware = MiddlewareFunctionContext.new(request: request_,
+                                                     client: self,
+                                                     args: args,
+                                                     callable: callable,
+                                                     config: config)
+          middleware.call
         end
 
-        promise = promise.then do |http|
-          http.send(endpoint.verb, path)
-        end
+        response = request.send(endpoint.verb, path)
 
         endpoint.pipes.map do |pipe|
           case pipe
@@ -149,8 +134,8 @@ module Clientura
           else
             registered_pipes.fetch pipe
           end
-        end.reduce promise do |promise_, pipe|
-          promise_.then(&pipe)
+        end.reduce response do |response_, pipe|
+          pipe.call response_
         end
       end
     end

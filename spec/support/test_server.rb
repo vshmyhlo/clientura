@@ -82,5 +82,22 @@ class TestServer < Sinatra::Base
     get '/namespace/namespaced' do
       200
     end
+
+    get '/comments/:id' do
+      json data: {
+        '1' => { 'id' => '1',
+                 'body' => 'Awesome!',
+                 'user_id' => '2',
+                 'attachment_ids' => ['3'] }
+      }[params[:id]]
+    end
+
+    get '/users/:id' do
+      json data: { '2' => { 'id' => '2', 'name' => 'Me' } }[params[:id]]
+    end
+
+    get '/attachments/:id' do
+      json data: { '3' => { 'id' => '3', 'type' => 'image' } }[params[:id]]
+    end
   end
 end

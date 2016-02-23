@@ -79,24 +79,6 @@ describe Clientura::Client do
         end
       end
 
-      aggregator :fetch_sum do |key:|
-        Clientura::RaisingPromise
-          .zip(left_operand_promise(key: key), right_operand_promise(key: key))
-          .then { |left, right| sum sum: left + right }
-          .value
-      end
-
-      aggregator :fetch_comment do |id:|
-        c = comments id: id
-        user_id, tag_id = c.values_at 'user_id', 'tag_id'
-        u, t = Clientura::RaisingPromise
-               .zip(users_promise(id: user_id), tags_promise(id: tag_id)).value
-
-        { 'comment' => c,
-          'user' => u,
-          'tag' => t }
-      end
-
       def initialize(uri:, token:)
         save_config uri: URI.parse(uri), token: token
       end
@@ -187,42 +169,6 @@ describe Clientura::Client do
     let(:sum) { client.left_operand(key: 'Secret') + client.right_operand(key: 'Secret') }
 
     it { should eq true }
-  end
-
-  describe '#fetch_sum' do
-    subject { -> { client.fetch_sum key: key } }
-
-    context 'with valid key' do
-      subject { super().call }
-
-      let(:key) { 'Secret' }
-
-      it { should be true }
-    end
-
-    context 'with invalid key' do
-      let(:key) { '' }
-
-      it { should raise_error(NoMethodError, "undefined method `+' for nil:NilClass") }
-    end
-  end
-
-  describe '#fetch_comment' do
-    subject { client.fetch_comment id: 1 }
-
-    it 'should return correct data' do
-      should eq('comment' => {
-                  'id' => '1',
-                  'user_id' => '2',
-                  'tag_id' => '3'
-                },
-                'user' => {
-                  'id' => '2'
-                },
-                'tag' => {
-                  'id' => '3'
-                })
-    end
   end
 
   # it('__run_server__', :focus) { binding.pry }
