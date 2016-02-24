@@ -3,7 +3,7 @@
 ### Basic concepts
 
 Create client class
-``` ruby 
+``` ruby
 class RandomApiClient
   include Clientura::Client
 end
@@ -41,9 +41,9 @@ class RandomApiClient
 
   use_middleware :with_token do
     pipe_through :body_retriever, [:parser, JSON], :data_retriever do
-      get :random_api_endpoint
-      get :same_with_custom_path, path: 'super-custom-path'
-      get :same_with_dynamic_path, path: -> (params) { "users/#{params[:id]}"}
+      get :comments # implicit path 'comments'
+      get :users, path: 'api/users' # explicit path
+      get :user, path: -> (params) { "api/users/#{params[:id]}"} # dynamic path
     end
   end
 end
@@ -59,10 +59,13 @@ Also instance should be created with token which will be used by middleware
 Instantiate and use!
 ```ruby
 client = RandomApiClient.new(token: 'Moms Birthday')
-client.random_api_endpoint
-client.random_api_endpoint_promise # yeap, asyncrony baby, backed by concurrent-ruby
-client.same_with_dynamic_path(id: 1)
-client.same_with_dynamic_path_promise(id: 1).then do |data_retrieved_through_pipes|
-  # process it ...
+client.comments
+client.comments_promise # yeap, asyncrony baby, backed by concurrent-ruby
+client.users_promise.value # just retrieve result from promise
+client.user(id: 1)
+client.user_promise(id: 1).then do |data_retrieved_through_pipes|
+  # process it asyncronously ...
 end
 ```
+
+### See more in [spec/clientura/adequate_spec.rb](spec/clientura/adequate_spec.rb)
