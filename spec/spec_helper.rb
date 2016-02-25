@@ -18,7 +18,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 require 'bundler'
-Bundler.require(:default, :test)
+Bundler.require(:test)
 require 'clientura'
 
 # Requires supporting files with custom matchers and macros, etc,
