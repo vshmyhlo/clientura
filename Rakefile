@@ -17,8 +17,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = 'clientura'
   gem.homepage = 'http://github.com/v-shmyhlo/clientura'
   gem.license = 'MIT'
-  gem.summary = %(TODO: one-line summary of your gem)
-  gem.description = %(TODO: longer description of your gem)
+  gem.summary = 'DSL for defining HTTP clients'
+  gem.description = 'DSL for defining HTTP clients'
   gem.email = 'aion.stu@gmail.com'
   gem.authors = ['Vlad Shmyhlo']
   # dependencies defined in Gemfile
