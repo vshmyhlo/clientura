@@ -136,7 +136,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport (~> 4.0)
+  activesupport (>= 4.0)
   bundler
   concurrent-ruby (~> 1.0)
   concurrent-ruby-edge (~> 0.2)
