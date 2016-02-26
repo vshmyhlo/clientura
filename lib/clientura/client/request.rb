@@ -11,7 +11,7 @@ module Clientura
       end
 
       def update(key)
-        Request.new http, config.merge(key => yield(config.fetch(key)))
+        Request.new http, config.merge(key => yield(config[key]))
       end
 
       def get(path, **opts)
