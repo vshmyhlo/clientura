@@ -52,6 +52,8 @@ module Clientura
       end
 
       def pipe_through(*pipes)
+        pipes = pipes.map { |o| normalize_mapper o }
+
         @pipes_context ||= []
         @pipes_context.push(*pipes)
         yield
@@ -59,10 +61,22 @@ module Clientura
       end
 
       def use_middleware(*middleware)
+        middleware = middleware.map { |o| normalize_mapper o }
+
         @middleware_context ||= []
         @middleware_context.push(*middleware)
         yield
         @middleware_context.pop middleware.count
+      end
+
+      def normalize_mapper(mapper)
+        case mapper
+        when Array
+          name, *config = mapper
+          { name: name, config: config }
+        else
+          { name: mapper, config: [] }
+        end
       end
     end
 
@@ -100,17 +114,8 @@ module Clientura
                  endpoint.path
                end
 
-        request = endpoint.middleware.map do |middleware|
-          case middleware
-          when Array
-            name, *config = middleware
-
-            { callable: registered_middleware.fetch(name),
-              config: config }
-          else
-            { callable: registered_middleware.fetch(middleware),
-              config: [] }
-          end
+        request = endpoint.middleware.map do |name:, config:|
+          { callable: registered_middleware.fetch(name), config: config }
         end.reduce Request.new do |request_, callable:, config:|
           middleware = MiddlewareFunctionContext.new(request: request_,
                                                      client: self,
@@ -122,14 +127,8 @@ module Clientura
 
         response = request.send(endpoint.verb, path)
 
-        endpoint.pipes.map do |pipe|
-          case pipe
-          when Array
-            name, *config = pipe
-            -> (res) { registered_pipes.fetch(name).call(res, *config) }
-          else
-            registered_pipes.fetch pipe
-          end
+        endpoint.pipes.map do |name:, config:|
+          -> (res) { registered_pipes.fetch(name).call(res, *config) }
         end.reduce response do |response_, pipe|
           pipe.call response_
         end
