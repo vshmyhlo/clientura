@@ -4,12 +4,8 @@ module Clientura
       attr_accessor :client, :args
 
       def initialize(request:, client:, args:, callable:, config:)
-        # headers
-        # params
-        # json
-        # uri
-        @request = request
-        @client = client
+        @request  = request
+        @client   = client
         @args     = args
         @callable = callable
         @config   = config

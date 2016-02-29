@@ -100,8 +100,6 @@ module Clientura
                  endpoint.path
                end
 
-        request = Request.new
-
         request = endpoint.middleware.map do |middleware|
           case middleware
           when Array
@@ -113,7 +111,7 @@ module Clientura
             { callable: registered_middleware.fetch(middleware),
               config: [] }
           end
-        end.reduce request do |request_, callable:, config:|
+        end.reduce Request.new do |request_, callable:, config:|
           middleware = MiddlewareFunctionContext.new(request: request_,
                                                      client: self,
                                                      args: args,
