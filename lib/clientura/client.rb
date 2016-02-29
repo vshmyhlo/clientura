@@ -34,11 +34,11 @@ module Clientura
                                                   [*@middleware_context],
                                                   [*@pipes_context]
 
-        define_method name do |**args|
+        define_method name do |args = {}|
           call_endpoint name, args
         end
 
-        define_method "#{name}_promise" do |**args|
+        define_method "#{name}_promise" do |args = {}|
           Concurrent::Promise.execute { send(name, args) }
         end
       end
@@ -101,11 +101,11 @@ module Clientura
         @config ||= {}
       end
 
-      def save_config(**args)
+      def save_config(args)
         self.config = config.merge args
       end
 
-      def call_endpoint(name, **args)
+      def call_endpoint(name, args)
         endpoint = registered_endpoints.fetch(name)
 
         path = if endpoint.path.respond_to?(:call)
