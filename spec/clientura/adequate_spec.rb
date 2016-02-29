@@ -1,5 +1,4 @@
-describe 'Ability to use this for solving real world problems',
-         test_server: :adequate do
+describe 'Ability to use this for solving real world problems' do
   # Purpose of this spec is to define some real world use cases in a clean and
   # readable manner to serve as an example of usage.
 
@@ -31,6 +30,12 @@ describe 'Ability to use this for solving real world problems',
         end
 
         pipe_through :body_retriever do
+          get :get_some, path: 'some'
+          put :put_some, path: 'some'
+          patch :patch_some, path: 'some'
+          post :post_some, path: 'some'
+          delete :delete_some, path: 'some'
+
           pipe_through [:parser, JSON] do
             get :parse_response
 
@@ -73,6 +78,38 @@ describe 'Ability to use this for solving real world problems',
     subject { super().root.status }
 
     it { should eq 200 }
+  end
+
+  describe 'My desire to use different verbs' do
+    describe 'GET' do
+      subject { super().get_some }
+
+      it { should eq 'get' }
+    end
+
+    describe 'POST' do
+      subject { super().post_some }
+
+      it { should eq 'post' }
+    end
+
+    describe 'PUT' do
+      subject { super().put_some }
+
+      it { should eq 'put' }
+    end
+
+    describe 'PATCH' do
+      subject { super().patch_some }
+
+      it { should eq 'patch' }
+    end
+
+    describe 'DELETE' do
+      subject { super().delete_some }
+
+      it { should eq 'delete' }
+    end
   end
 
   describe 'My desire to see some exceptions' do

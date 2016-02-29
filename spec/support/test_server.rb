@@ -63,6 +63,26 @@ class TestServer < Sinatra::Base
   namespace '/real_world' do
     get { 200 }
 
+    get '/some' do
+      'get'
+    end
+
+    post '/some' do
+      'post'
+    end
+
+    patch '/some' do
+      'patch'
+    end
+
+    put '/some' do
+      'put'
+    end
+
+    delete '/some' do
+      'delete'
+    end
+
     get '/pass_token' do
       env['HTTP_AUTHTOKEN'] == 'Secret' ? 200 : 403
     end

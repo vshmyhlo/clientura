@@ -22,12 +22,10 @@ module Clientura
         @registered_middleware ||= {}
       end
 
-      def get(name, path: nil)
-        register_endpoint(name, verb: :get, path: path || name.to_s)
-      end
-
-      def post(name, path: nil)
-        register_endpoint(name, verb: :post, path: path || name.to_s)
+      [:get, :post, :put, :patch, :delete].each do |verb|
+        define_method verb do |name, path: nil|
+          register_endpoint(name, verb: verb, path: path || name.to_s)
+        end
       end
 
       def register_endpoint(name, verb:, path:)

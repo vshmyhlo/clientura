@@ -14,12 +14,10 @@ module Clientura
         Request.new http, config.merge(key => yield(config[key]))
       end
 
-      def get(path, **opts)
-        super(*build_request_arguments(path, opts))
-      end
-
-      def post(path, **opts)
-        super(*build_request_arguments(path, opts))
+      [:get, :post, :put, :patch, :delete].each do |verb|
+        define_method verb do |path, **opts|
+          super(*build_request_arguments(path, opts))
+        end
       end
 
       def build_request_arguments(path, **opts)

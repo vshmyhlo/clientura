@@ -24,4 +24,5 @@ group :development, :test do
   gem 'sinatra'
   gem 'sinatra-contrib'
   gem 'rack', require: ['rack', 'rack/handler/webrick']
+  gem 'thin'
 end

@@ -37,11 +37,12 @@ RSpec.configure do |config|
 
   config.before(:suite) do |_example|
     pid = Process.fork do
-      trap(:INT) { Rack::Handler::WEBrick.shutdown }
-      Rack::Handler::WEBrick.run TestServer.new,
-                                 Port: 3001,
-                                 Logger: WEBrick::Log.new('/dev/null'),
-                                 AccessLog: []
+      Rack::Handler::Thin.run TestServer, Port: 3001
+      # trap(:INT) { Rack::Handler::WEBrick.shutdown }
+      # Rack::Handler::WEBrick.run TestServer.new,
+      #                            Port: 3001,
+      #                            Logger: WEBrick::Log.new('/dev/null'),
+      #                            AccessLog: []
       exit
     end
 
