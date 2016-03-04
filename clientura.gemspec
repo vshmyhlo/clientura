@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Vlad Shmyhlo"]
-  s.date = "2016-02-29"
+  s.date = "2016-03-04"
   s.description = "DSL for defining HTTP clients"
   s.email = "aion.stu@gmail.com"
   s.extra_rdoc_files = [
@@ -20,10 +20,12 @@ Gem::Specification.new do |s|
     "README.rdoc"
   ]
   s.files = [
+    ".codeclimate.yml",
     ".rspec",
     ".rubocop.yml",
     ".ruby-gemset",
     ".ruby-version",
+    ".travis.yml",
     "Gemfile",
     "Gemfile.lock",
     "LICENSE.txt",
@@ -69,6 +71,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<sinatra-contrib>, [">= 0"])
       s.add_development_dependency(%q<rack>, [">= 0"])
       s.add_development_dependency(%q<thin>, [">= 0"])
+      s.add_development_dependency(%q<codeclimate-test-reporter>, [">= 0"])
     else
       s.add_dependency(%q<http>, ["~> 1.0"])
       s.add_dependency(%q<concurrent-ruby>, ["~> 1.0"])
@@ -86,6 +89,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<sinatra-contrib>, [">= 0"])
       s.add_dependency(%q<rack>, [">= 0"])
       s.add_dependency(%q<thin>, [">= 0"])
+      s.add_dependency(%q<codeclimate-test-reporter>, [">= 0"])
     end
   else
     s.add_dependency(%q<http>, ["~> 1.0"])
@@ -104,6 +108,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<sinatra-contrib>, [">= 0"])
     s.add_dependency(%q<rack>, [">= 0"])
     s.add_dependency(%q<thin>, [">= 0"])
+    s.add_dependency(%q<codeclimate-test-reporter>, [">= 0"])
   end
 end
 

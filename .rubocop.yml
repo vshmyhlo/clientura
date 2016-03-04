@@ -1,2 +1,9 @@
 AllCops:
   TargetRubyVersion: 2.2
+
+  Exclude:
+    - Gemfile*
+    - clientura.gemspec
+
+Documentation:
+    Enabled: false
