@@ -28,9 +28,17 @@ module Clientura
         end
       end
 
+      def normalize_path(path)
+        if path.respond_to?(:call)
+          path
+        else
+          -> (_) { path }
+        end
+      end
+
       def register_endpoint(name, verb:, path:)
         registered_endpoints[name] = Endpoint.new verb,
-                                                  path,
+                                                  normalize_path(path),
                                                   [*@middleware_context],
                                                   [*@pipes_context]
 
@@ -106,13 +114,7 @@ module Clientura
       end
 
       def call_endpoint(name_, args)
-        endpoint = registered_endpoints.fetch(name_)
-
-        path = if endpoint.path.respond_to?(:call)
-                 endpoint.path.call(args)
-               else
-                 endpoint.path
-               end
+        endpoint = registered_endpoints.fetch name_
 
         middlewares = endpoint.middleware.map do |name:, config:|
           { callable: registered_middleware.fetch(name), config: config }
@@ -128,7 +130,7 @@ module Clientura
           middleware.call
         end
 
-        response = request.send(endpoint.verb, path)
+        response = request.send endpoint.verb, endpoint.path.call(args)
 
         endpoints = endpoint.pipes.map do |name:, config:|
           -> (res) { registered_pipes.fetch(name).call(res, *config) }
