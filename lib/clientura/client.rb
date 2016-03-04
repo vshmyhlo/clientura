@@ -114,9 +114,12 @@ module Clientura
                  endpoint.path
                end
 
-        request = endpoint.middleware.map do |name:, config:|
+        middlewares = endpoint.middleware.map do |name:, config:|
           { callable: registered_middleware.fetch(name), config: config }
-        end.reduce Request.new do |request_, callable:, config:|
+        end
+
+        request = middlewares
+                  .reduce Request.new do |request_, callable:, config:|
           middleware = MiddlewareFunctionContext.new(request: request_,
                                                      client: self,
                                                      args: args,
@@ -127,9 +130,11 @@ module Clientura
 
         response = request.send(endpoint.verb, path)
 
-        endpoint.pipes.map do |name:, config:|
+        endpoints = endpoint.pipes.map do |name:, config:|
           -> (res) { registered_pipes.fetch(name).call(res, *config) }
-        end.reduce response do |response_, pipe|
+        end
+
+        endpoints.reduce response do |response_, pipe|
           pipe.call response_
         end
       end
