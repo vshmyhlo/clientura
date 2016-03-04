@@ -1,4 +1,4 @@
-script: bundle exec rspec
+script: bundle exec rake
 sudo: false
 # cache: bundler
 # before_install:
