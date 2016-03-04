@@ -25,4 +25,5 @@ group :development, :test do
   gem 'sinatra-contrib'
   gem 'rack', require: ['rack', 'rack/handler/webrick']
   gem 'thin'
+  gem 'codeclimate-test-reporter', require: nil
 end
