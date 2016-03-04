@@ -1,4 +1,4 @@
-# Clientura [![Build Status](https://travis-ci.org/v-shmyhlo/clientura.svg?branch=master)](https://travis-ci.org/v-shmyhlo/clientura) [![Code Climate](https://codeclimate.com/github/v-shmyhlo/clientura/badges/gpa.svg)](https://codeclimate.com/github/v-shmyhlo/clientura) [![Test Coverage](https://codeclimate.com/github/v-shmyhlo/clientura/badges/coverage.svg)](https://codeclimate.com/github/v-shmyhlo/clientura/coverage) [![Issue Count](https://codeclimate.com/github/v-shmyhlo/clientura/badges/issue_count.svg)](https://codeclimate.com/github/v-shmyhlo/clientura)
+# Clientura [![Build Status](https://travis-ci.org/v-shmyhlo/clientura.svg?branch=master)](https://travis-ci.org/v-shmyhlo/clientura) [![Test Coverage](https://codeclimate.com/github/v-shmyhlo/clientura/badges/coverage.svg)](https://codeclimate.com/github/v-shmyhlo/clientura/coverage) [![Code Climate](https://codeclimate.com/github/v-shmyhlo/clientura/badges/gpa.svg)](https://codeclimate.com/github/v-shmyhlo/clientura) [![Issue Count](https://codeclimate.com/github/v-shmyhlo/clientura/badges/issue_count.svg)](https://codeclimate.com/github/v-shmyhlo/clientura)
 
 ### Basic concepts
 
