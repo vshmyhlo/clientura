@@ -1,4 +1,4 @@
-# Clientura
+# Clientura [![Build Status](https://travis-ci.org/v-shmyhlo/clientura.svg?branch=master)](https://travis-ci.org/v-shmyhlo/clientura)
 
 ### Basic concepts
 
