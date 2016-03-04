@@ -4,6 +4,7 @@ AllCops:
   Exclude:
     - Gemfile*
     - clientura.gemspec
+    - spec/*
 
 Documentation:
     Enabled: false

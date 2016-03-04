@@ -105,8 +105,8 @@ module Clientura
         self.config = config.merge args
       end
 
-      def call_endpoint(name, args)
-        endpoint = registered_endpoints.fetch(name)
+      def call_endpoint(name_, args)
+        endpoint = registered_endpoints.fetch(name_)
 
         path = if endpoint.path.respond_to?(:call)
                  endpoint.path.call(args)
