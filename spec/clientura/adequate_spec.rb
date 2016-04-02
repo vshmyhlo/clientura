@@ -75,7 +75,7 @@ describe 'Ability to use this for solving real world problems' do
   end
 
   describe 'My wish to see this at least working' do
-    subject { super().root.status }
+    subject { super().root.code }
 
     it { should eq 200 }
   end
@@ -125,7 +125,7 @@ describe 'Ability to use this for solving real world problems' do
       it { should be_pending }
 
       it 'has correct value' do
-        expect(subject.value.status).to eq 200
+        expect(subject.value.code).to eq 200
       end
 
       context 'when awaited' do
@@ -161,7 +161,7 @@ describe 'Ability to use this for solving real world problems' do
   end
 
   describe 'My desire to pass some token in header' do
-    subject { super().pass_token.status }
+    subject { super().pass_token.code }
 
     let(:client_config) { super().merge token: token }
 
@@ -197,7 +197,7 @@ describe 'Ability to use this for solving real world problems' do
   end
 
   describe 'My desire to namespace routes' do
-    subject { super().namespaced.status }
+    subject { super().namespaced.code }
 
     it { should eq 200 }
   end

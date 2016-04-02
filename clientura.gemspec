@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Vlad Shmyhlo"]
-  s.date = "2016-03-04"
+  s.date = "2016-04-02"
   s.description = "DSL for defining HTTP clients"
   s.email = "aion.stu@gmail.com"
   s.extra_rdoc_files = [
@@ -55,7 +55,7 @@ Gem::Specification.new do |s|
     s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<http>, ["~> 1.0"])
+      s.add_runtime_dependency(%q<typhoeus>, ["~> 1.0"])
       s.add_runtime_dependency(%q<concurrent-ruby>, ["~> 1.0"])
       s.add_runtime_dependency(%q<concurrent-ruby-edge>, ["~> 0.2"])
       s.add_runtime_dependency(%q<concurrent-ruby-ext>, ["~> 1.0"])
@@ -73,7 +73,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<thin>, [">= 0"])
       s.add_development_dependency(%q<codeclimate-test-reporter>, [">= 0"])
     else
-      s.add_dependency(%q<http>, ["~> 1.0"])
+      s.add_dependency(%q<typhoeus>, ["~> 1.0"])
       s.add_dependency(%q<concurrent-ruby>, ["~> 1.0"])
       s.add_dependency(%q<concurrent-ruby-edge>, ["~> 0.2"])
       s.add_dependency(%q<concurrent-ruby-ext>, ["~> 1.0"])
@@ -92,7 +92,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<codeclimate-test-reporter>, [">= 0"])
     end
   else
-    s.add_dependency(%q<http>, ["~> 1.0"])
+    s.add_dependency(%q<typhoeus>, ["~> 1.0"])
     s.add_dependency(%q<concurrent-ruby>, ["~> 1.0"])
     s.add_dependency(%q<concurrent-ruby-edge>, ["~> 0.2"])
     s.add_dependency(%q<concurrent-ruby-ext>, ["~> 1.0"])

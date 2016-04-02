@@ -1,4 +1,4 @@
-require 'http'
+require 'typhoeus'
 require 'concurrent'
 require 'concurrent-edge'
 require 'active_support/core_ext/object'

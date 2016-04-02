@@ -6,7 +6,7 @@ source 'http://rubygems.org'
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
 
-gem 'http', '~> 1.0'
+gem 'typhoeus', '~> 1.0'
 gem 'concurrent-ruby', '~> 1.0'
 gem 'concurrent-ruby-edge', '~> 0.2'
 gem 'concurrent-ruby-ext', '~> 1.0'

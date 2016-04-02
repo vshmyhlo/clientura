@@ -1,33 +1,27 @@
 module Clientura
   module Client
-    class Request < SimpleDelegator
+    class Request
       attr_reader :config, :http
 
-      def initialize(http = HTTP.headers({}),
-                     config = { uri: '', params: {}, json: nil })
-        super http
-        @http   = http
-        @config = config
+      def initialize(options = { uri: '', headers: {}, params: {} })
+        @options = options
       end
 
       def update(key)
-        Request.new http, config.merge(key => yield(config[key]))
+        Request.new @options.merge key => yield(@options[key])
       end
 
-      [:get, :post, :put, :patch, :delete].each do |verb|
-        define_method verb do |path, **opts|
-          super(*build_request_arguments(path, opts))
-        end
+      def call
+        uri            = @options[:uri]
+        path           = @options[:path]
+        json           = @options[:json]
+        options        = @options.slice(*@options.keys - [:uri, :path, :json])
+        options[:body] = JSON.dump(json) if json
+        Typhoeus::Request.new(URI.join(uri, path), options).run
       end
 
-      def build_request_arguments(path, **opts)
-        opts[:params] = config.fetch(:params) if config[:params].present?
-        opts[:json] = config.fetch(:json) if config[:json].present?
-        [URI.join(config.fetch(:uri), path), opts]
-      end
-
-      def headers(*args)
-        Request.new(http.headers(*args), config)
+      def headers(args)
+        update(:headers) { |h| h.merge args }
       end
     end
   end

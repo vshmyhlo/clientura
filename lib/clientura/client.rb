@@ -130,7 +130,9 @@ module Clientura
           middleware.call
         end
 
-        response = request.send endpoint.verb, endpoint.path.call(args)
+        request  = request.update(:method) { endpoint.verb }
+        request  = request.update(:path) { endpoint.path.call(args) }
+        response = request.call
 
         endpoints = endpoint.pipes.map do |name:, config:|
           -> (res) { registered_pipes.fetch(name).call(res, *config) }
