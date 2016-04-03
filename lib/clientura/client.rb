@@ -90,16 +90,18 @@ module Clientura
 
     module InstanceMethods
       def self.included(klass)
-        define_method :registered_endpoints do
-          klass.registered_endpoints
-        end
+        klass.class_eval do
+          define_method :registered_endpoints do
+            klass.registered_endpoints
+          end
 
-        define_method :registered_pipes do
-          klass.registered_pipes
-        end
+          define_method :registered_pipes do
+            klass.registered_pipes
+          end
 
-        define_method :registered_middleware do
-          klass.registered_middleware
+          define_method :registered_middleware do
+            klass.registered_middleware
+          end
         end
       end
 
