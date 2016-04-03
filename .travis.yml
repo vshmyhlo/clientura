@@ -1,10 +1,11 @@
+language: ruby
 script: bundle exec rake
 sudo: false
-# cache: bundler
-# before_install:
-#   # - export DISPLAY=:99.0
-#   # - sh -e /etc/init.d/xvfb start
-#   - gem install bundler
-# # before_script:
-# #   - cp config/database.yml.sample config/database.yml
-# #   - psql -c 'create database project_test' -U postgres
+deploy:
+  provider: rubygems
+  api_key:
+    secure: MLKa/1pbPj5M3XtLFhafu3rkWElBQ9chjj8VSoLfNZEWnHaqqCNBQOcdcu2PHV8rODjl/TmpnZDh1PwU4GwSpePN8LGKg5cMLGPl0Ma7MpQ2b74hTCzCZNXd6AZTeC/5BeS3EaP8tBn+zPOVI5TscmZ1iCsG7nnz9eyn8mqQgjYaldhKPLRvBCQC7IwYPTrGoGLsBO9sfkXLN7EIMPhGJ2zOxb0oesoUpK1OuBI5RcbRaAXzrUDxLbLYxugTrN8t+asAvq1YPyltXmqCK7C91IDAf0ZV9arm1G63Sd3bmIdmeIldqTB0yQRxdYiw9FOO14of2zD+/Q/QtnQ+yO7l+NwpzKQ46Zw/lLZh586SZt2w2HHF3lnt8R62alMMiVLuvqvQgrrfy6V2kn8p9zrMx7zL7IyYsIULoksRQUSip7KnW8CeHWB9bjbKGrapYOYXsxxDoIFm55fDM3Hwxk7fSdrvFMTrcaVo4d96GVT+uETklRJ8/nwNQHUAZniWp/ipgybk15bmrG2CRZvG7SWAUVHUwChvTJ6VG5n76GayIAdNbYkqgU+KC/pd7bj+oDLAF6nR0JOdA0eCG2D6nkKT1SBBrzND7hAyCLxybrDFRq9wFuIP3qBqjLgCsEFSan0bSMgaRO6kdN9al06801cCDMkB9ZirgzQqkwx/Vj+4xvY=
+  gem: clientura
+  on:
+    tags: false
+    repo: v-shmyhlo/clientura
