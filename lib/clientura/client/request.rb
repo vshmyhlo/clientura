@@ -3,8 +3,14 @@ module Clientura
     class Request
       attr_reader :config, :http
 
-      def initialize(options = { uri: '', headers: {}, params: {} })
-        @options = options
+      def initialize(options = {})
+        defaults = {
+          uri: '',
+          headers: {},
+          params: {}
+        }
+
+        @options = defaults.merge options
       end
 
       def update(key)
